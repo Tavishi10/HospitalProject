@@ -41,4 +41,10 @@ def delete(request, id):
 @csrf_exempt
 def edit(request, id):
     if (request.method == "PUT"):
-        pass
+        body = json.loads(request.body.decode("utf-8"))
+        dept = Department.objects.get(pk = body['dept_id'])
+        date = datetime.strptime(body['date_of_birth'], "%Y-%m-%d").date()
+        Doctor.objects.filter(pk=id).update(name=body['name'], contact_no=body['contact_no'], email_id=body['email_id'], date_of_birth = date, specialization = body['specialization'], opd_fees = body['opd_fees'], salary=body['salary'], dept_id = dept)
+        newrecord = Doctor.objects.filter(pk=id)
+        data = json.loads(serializers.serialize('json', newrecord))
+        return JsonResponse(data, safe=False)
