@@ -42,7 +42,7 @@ class Nurse(Person):
 class OpdPatient(Person):
     address = models.CharField(max_length=60)
     gender = models.CharField(max_length=10)
-    bill_amount = models.DecimalField(decimal_places=2, max_digits=15)
+    bill_amount = models.DecimalField(decimal_places=2, max_digits=15, default=0)
     doctor_id = models.ForeignKey(Doctor, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
@@ -66,4 +66,4 @@ class IpdPatient(Person):
     discharge_date = models.DateField()
 
     def __str__(self):
-        return '%s %s %s %s' %(self.name, self.contact_no, self.address, self.gender, self.ward)
+        return '%s %s %s %s %s' %(self.name, self.contact_no, self.address, self.gender, self.ward)
