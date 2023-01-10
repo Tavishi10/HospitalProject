@@ -1,5 +1,5 @@
 from django.urls import path
-from . import department, nurse, staff, doctor
+from . import department, nurse, staff, doctor, opdpatient, ipdpatient
 
 urlpatterns = [
     path('department/', department.get_all, name='get_all'),
@@ -22,4 +22,14 @@ urlpatterns = [
     path('doctor/get/<int:id>', doctor.get_doctor_by_id, name='get_doctor_by_id'),
     path('doctor/edit/<int:id>', doctor.edit, name='edit'),
     path('doctor/delete/<int:id>', doctor.delete, name='delete'),
+    path('opdpatient/', opdpatient.get_all_opdpatient, name='get_all_opdpatient'),
+    path('opdpatient/create/', opdpatient.create_opdpatient, name='create_opdpatient'),
+    path('opdpatient/get/<int:id>', opdpatient.get_opdpatient_by_id, name='get_opdpatient_by_id'),
+    path('opdpatient/edit/<int:id>', opdpatient.edit_opdpatient, name='edit_opdpatient'),
+    path('opdpatient/delete/<int:id>', opdpatient.delete_record, name='delete_record'),
+    path('ipdpatient/', ipdpatient.get_all_ipdpatient, name='get_all_ipdpatient'),
+    path('ipdpatient/create/', ipdpatient.create_ipdpatient, name='create_ipdpatient'),
+    path('ipdpatient/get/<int:id>', ipdpatient.get_ipdpatient_by_id, name='get_ipdpatient_by_id'),
+    path('ipdpatient/edit/<int:id>', ipdpatient.edit_ipdpatient, name='edit_ipdpatient'),
+    path('ipdpatient/delete/<int:id>', ipdpatient.delete_record, name='delete_record'),
 ]
