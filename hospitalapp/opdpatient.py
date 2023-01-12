@@ -33,7 +33,7 @@ def edit_opdpatient(request, id):
     pass
 
 @csrf_exempt
-def delete_record(request, id):
+def delete_opdpatient(request, id):
     if (request.method == "DELETE"):
         OpdPatient.objects.filter(pk=id).delete()
         newrecord = OpdPatient.objects.all()

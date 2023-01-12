@@ -9,9 +9,7 @@ from datetime import datetime
 @csrf_exempt
 def get_all_doctor(request):
     if (request.method == "GET"):
-        #Serialize the data into json
         data = serializers.serialize("json", Doctor.objects.all())
-        # Turn the JSON data into a dict and send as JSON response
         return JsonResponse(json.loads(data), safe=False)
 
 @csrf_exempt
@@ -21,7 +19,7 @@ def get_doctor_by_id(request, id):
         return JsonResponse(json.loads(data), safe=False)
 
 @csrf_exempt
-def create(request):
+def create_doctor(request):
     if (request.method == "POST"):
         body = json.loads(request.body.decode("utf-8"))
         dept = Department.objects.get(pk = body['dept_id'])
@@ -31,7 +29,7 @@ def create(request):
         return JsonResponse(data, safe=False)
 
 @csrf_exempt
-def delete(request, id):
+def delete_doctor(request, id):
     if (request.method == "DELETE"):
         Doctor.objects.filter(pk=id).delete()
         newrecord = Doctor.objects.all()
@@ -39,7 +37,7 @@ def delete(request, id):
         return JsonResponse(data, safe=False)
 
 @csrf_exempt
-def edit(request, id):
+def edit_doctor(request, id):
     if (request.method == "PUT"):
         body = json.loads(request.body.decode("utf-8"))
         dept = Department.objects.get(pk = body['dept_id'])

@@ -14,7 +14,7 @@ def get_all(request):
         return JsonResponse(json.loads(data), safe=False)
 
 @csrf_exempt
-def create(request):
+def create_department(request):
     if (request.method == "POST"):
         # Turn the body into a dict
         body = json.loads(request.body.decode("utf-8"))
@@ -32,7 +32,7 @@ def get_by_id(request, id):
         return JsonResponse(json.loads(data), safe=False)
 
 @csrf_exempt
-def edit(request, id):
+def edit_department(request, id):
     if (request.method == "PUT"):
         # Turn the body into a dict
         body = json.loads(request.body.decode("utf-8"))
@@ -45,7 +45,7 @@ def edit(request, id):
         return JsonResponse(data, safe=False)
 
 @csrf_exempt
-def delete(request, id):
+def delete_department(request, id):
     if (request.method == "DELETE"):
         # delete the item, get all remaining records for response
         Department.objects.filter(pk=id).delete()

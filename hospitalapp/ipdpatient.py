@@ -24,7 +24,7 @@ def create_ipdpatient(request):
         body = json.loads(request.body.decode("utf-8"))
         doctor = Doctor.objects.get(pk = body['doctor_id'])
         dob = datetime.strptime(body['date_of_birth'], "%Y-%m-%d").date()
-        newrecord = IpdPatient.objects.create(name=body['name'], contact_no=body['contact_no'], email_id=body['email_id'], date_of_birth = dob, address=body['address'], gender=body['gender'], doctor_id = doctor, ward=body['ward'], discharge_date = date.today)
+        newrecord = IpdPatient.objects.create(name=body['name'], contact_no=body['contact_no'], email_id=body['email_id'], date_of_birth = dob, address=body['address'], gender=body['gender'], doctor_id = doctor, ward=body['ward'], discharge_date = datetime.now().date())
         data = json.loads(serializers.serialize('json', [newrecord]))
         return JsonResponse(data, safe=False)
 
@@ -33,10 +33,19 @@ def edit_ipdpatient(request, id):
     pass
 
 @csrf_exempt
-def delete_record(request, id):
+def delete_ipdpatient(request, id):
     if (request.method == "DELETE"):
         IpdPatient.objects.filter(pk=id).delete()
         newrecord = IpdPatient.objects.all()
         data = json.loads(serializers.serialize('json', newrecord))
         return JsonResponse(data, safe=False)
+
+def update_charges(request, id):
+    pass
+
+def total_bill_amount(request, id):
+    pass
+
+def discharge(request, id):
+    pass
 

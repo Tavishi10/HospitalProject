@@ -21,7 +21,7 @@ def get_nurse_by_id(request, id):
         return JsonResponse(json.loads(data), safe=False)
 
 @csrf_exempt
-def create(request):
+def create_nurse(request):
     if (request.method == "POST"):
         body = json.loads(request.body.decode("utf-8"))
         dept = Department.objects.get(pk = body['dept_id'])
@@ -31,7 +31,7 @@ def create(request):
         return JsonResponse(data, safe=False)
 
 @csrf_exempt
-def delete(request, id):
+def delete_nurse(request, id):
     if (request.method == "DELETE"):
         Nurse.objects.filter(pk=id).delete()
         newrecord = Nurse.objects.all()
@@ -39,7 +39,7 @@ def delete(request, id):
         return JsonResponse(data, safe=False)
 
 @csrf_exempt
-def edit(request, id):
+def edit_nurse(request, id):
     if (request.method == "PUT"):
         body = json.loads(request.body.decode("utf-8"))
         dept = Department.objects.get(pk = body['dept_id'])
