@@ -19,7 +19,7 @@ def get_staff_by_id(request, id):
         return JsonResponse(json.loads(data), safe=False)
 
 @csrf_exempt
-def create(request):
+def create_staff(request):
     if (request.method == "POST"):
         body = json.loads(request.body.decode("utf-8"))
         dept = Department.objects.get(pk = body['dept_id'])
@@ -29,7 +29,7 @@ def create(request):
         return JsonResponse(data, safe=False)
 
 @csrf_exempt
-def delete(request, id):
+def delete_staff(request, id):
     if (request.method == "DELETE"):
         Staff.objects.filter(pk=id).delete()
         newrecord = Staff.objects.all()
@@ -37,7 +37,7 @@ def delete(request, id):
         return JsonResponse(data, safe=False)
 
 @csrf_exempt
-def edit(request, id):
+def edit_staff(request, id):
     if (request.method == "PUT"):
         body = json.loads(request.body.decode("utf-8"))
         dept = Department.objects.get(pk = body['dept_id'])
