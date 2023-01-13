@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
-from .models import Department, Nurse
+from .models import Department, Nurse, IpdPatient, OpdPatient
 import json
 from datetime import datetime
 
@@ -48,3 +48,9 @@ def edit_nurse(request, id):
         newrecord = Nurse.objects.filter(pk=id)
         data = json.loads(serializers.serialize('json', newrecord))
         return JsonResponse(data, safe=False)
+
+@csrf_exempt
+def get_all_ipdpatients_of_nurse(request, id):
+    if(request.method == "GET"):
+        data = serializers.serialize("json", IpdPatient.objects.filter(nurses = id))
+        return JsonResponse(json.loads(data), safe=False)

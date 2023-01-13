@@ -43,6 +43,29 @@ class TestDepartmentView(TestCase):
         self.assertEqual(len(response.json()), 4)
         self.assertEqual(Department.objects.all().count(), 4)
 
+    def test_get_doctors_by_department(self):
+        dept = Department.objects.get(pk=1)
+        for i in range(3):
+            Doctor.objects.create(name="Tavishi Suvarna", contact_no="9834758493", email_id="ts@gmail.com", date_of_birth = "1995-5-23", specialization = "Physician", opd_fees = 100, salary=60000, dept_id = dept)
+        
+        dept = Department.objects.get(pk=2)
+        Doctor.objects.create(name="Tavishi Suvarna", contact_no="9834758493", email_id="ts@gmail.com", date_of_birth = "1995-5-23", specialization = "Physician", opd_fees = 100, salary=60000, dept_id = dept)
+
+        response = self.client.get('/hospital/department/doctors/1')
+        self.assertEqual(len(response.json()), 3)
+
+    def test_get_nurses_by_department(self):
+        dept = Department.objects.get(pk=1)
+        for i in range(3):
+            Nurse.objects.create(name="Sneha Lahariya", contact_no="9834758493", email_id="sl@gmail.com", date_of_birth = "1995-5-23", specialization = "General", salary=60000, dept_id = dept)
+
+        dept = Department.objects.get(pk=2)
+        Nurse.objects.create(name="Sneha Lahariya", contact_no="9834758493", email_id="sl@gmail.com", date_of_birth = "1995-5-23", specialization = "General", salary=60000, dept_id = dept)
+
+        response = self.client.get('/hospital/department/nurses/1')
+        self.assertEqual(len(response.json()), 3)
+
+
 class TestDoctorView(TestCase):
     def setUp(self):
         self.client = Client()
@@ -81,13 +104,35 @@ class TestDoctorView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()), 4)
         self.assertEqual(Doctor.objects.all().count(), 4)
+
+    def test_get_opdpatients_of_doctor(self):
+        doc = Doctor.objects.get(pk=1)
+        for i in range(3):
+            OpdPatient.objects.create(name="Shubham Patil", contact_no="9834758493", email_id="sp@gmail.com", date_of_birth = "1995-5-23", address="Thane", gender="male", doctor_id = doc)
+            
+        doc = Doctor.objects.get(pk=2)
+        OpdPatient.objects.create(name="Shubham Patil", contact_no="9834758493", email_id="sp@gmail.com", date_of_birth = "1995-5-23", address="Thane", gender="male", doctor_id = doc)
+        
+        response = self.client.get('/hospital/doctor/opdpatient/1')
+        self.assertEqual(len(response.json()), 3)
+
+    def test_get_ipdpatients_of_doctor(self):
+        doc = Doctor.objects.get(pk=1)
+        for i in range(3):
+            IpdPatient.objects.create(name="Shubham Patil", contact_no="9834758493", email_id="sp@gmail.com", date_of_birth = "1995-5-23", address="Thane", gender="male", doctor_id = doc, ward="general", discharge_date = "2023-1-15")
+            
+        doc = Doctor.objects.get(pk=2)
+        IpdPatient.objects.create(name="Shubham Patil", contact_no="9834758493", email_id="sp@gmail.com", date_of_birth = "1995-5-23", address="Thane", gender="male", doctor_id = doc, ward="general", discharge_date = "2023-1-15")
+        
+        response = self.client.get('/hospital/doctor/ipdpatient/1')
+        self.assertEqual(len(response.json()), 3)
     
 class TestNurseView(TestCase):
     def setUp(self):
         self.client = Client()
 
         dept = Department.objects.create(dept_name="ER")
-
+        Doctor.objects.create(name="Tavishi Suvarna", contact_no="9834758493", email_id="ts@gmail.com", date_of_birth = "1995-5-23", specialization = "Physician", opd_fees = 100, salary=60000, dept_id = dept)
         for i in range(5):
             Nurse.objects.create(name="Sneha Lahariya", contact_no="9834758493", email_id="sl@gmail.com", date_of_birth = "1995-5-23", specialization = "General", salary=60000, dept_id = dept)
 
@@ -120,6 +165,18 @@ class TestNurseView(TestCase):
         response = self.client.delete('/hospital/nurse/delete/1')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Nurse.objects.all().count(), 4)
+
+    def test_get_ipdpatients_of_nurse(self):
+        doc = Doctor.objects.get(pk=1)
+        for i in range(3):
+            IpdPatient.objects.create(name="Shubham Patil", contact_no="9834758493", email_id="sp@gmail.com", date_of_birth = "1995-5-23", address="Thane", gender="male", doctor_id = doc, ward="general", discharge_date = "2023-1-15")
+        
+        IpdPatient.objects.get(pk=1).nurses.set(Nurse.objects.filter(pk=1))
+        IpdPatient.objects.get(pk=2).nurses.set(Nurse.objects.filter(pk=1)) 
+        IpdPatient.objects.get(pk=3).nurses.set(Nurse.objects.filter(pk=2))      
+
+        response = self.client.get('/hospital/nurse/ipdpatient/1')
+        self.assertEqual(len(response.json()), 2)
 
 class TestStaffView(TestCase):
     def setUp(self):
@@ -187,12 +244,12 @@ class TestOpdPatientView(TestCase):
         self.assertEqual(len(response.json()), 1)
         self.assertEqual(OpdPatient.objects.all().count(), 6)
 
-    # def test_update_opdpatient(self):
-    #     self.assertEqual(OpdPatient.objects.get(pk=1).address, "Thane")
-    #     response = self.client.put('/hospital/opdpatient/edit/1', {"name" : "Shubham Patil", "contact_no" : "9894959685", "email_id" : "sp@gmail.com", "date_of_birth" : "1995-5-23", "address" : "Dombivli", "gender" : "male", "doctor_id" : 1}, content_type='application/json')
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertEqual(len(response.json()), 1)
-    #     self.assertEqual(OpdPatient.objects.get(pk=1).address, "Dombivli")
+    def test_update_opdpatient(self):
+        self.assertEqual(OpdPatient.objects.get(pk=1).address, "Thane")
+        response = self.client.put('/hospital/opdpatient/edit/1', {"name" : "Shubham Patil", "contact_no" : "9894959685", "email_id" : "sp@gmail.com", "date_of_birth" : "1995-5-23", "address" : "Dombivli", "gender" : "male", "doctor_id" : 1}, content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()), 1)
+        self.assertEqual(OpdPatient.objects.get(pk=1).address, "Dombivli")
 
     def test_delete_opdpatient(self):
         self.assertEqual(OpdPatient.objects.all().count(), 5)
@@ -206,6 +263,9 @@ class TestIpdPatientView(TestCase):
         self.client = Client()
         dept = Department.objects.create(dept_name="ER")
         doctor = Doctor.objects.create(name="Tavishi Suvarna", contact_no="9834758493", email_id="ts@gmail.com", date_of_birth = "1995-5-23", specialization = "Physician", opd_fees = 100, salary=60000, dept_id = dept)
+
+        for i in range(2):
+            Nurse.objects.create(name="Sneha Lahariya", contact_no="9834758493", email_id="sl@gmail.com", date_of_birth = "1995-5-23", specialization = "General", salary=60000, dept_id = dept)
 
         for i in range(5):
             IpdPatient.objects.create(name="Shubham Patil", contact_no="9834758493", email_id="sp@gmail.com", date_of_birth = "1995-5-23", address="Thane", gender="male", doctor_id = doctor, ward="general", discharge_date = "2023-1-15")
@@ -223,17 +283,17 @@ class TestIpdPatientView(TestCase):
 
     def test_create_ipdpatient(self):
         self.assertEqual(IpdPatient.objects.all().count(), 5)
-        response = self.client.post('/hospital/ipdpatient/create/', {"name" : "Prakash Singh", "contact_no" : "9894999685", "email_id" : "ps@gmail.com", "date_of_birth" : "1993-9-20", "address" : "Thane", "gender" : "male", "doctor_id" : 1, "ward":"General"}, content_type='application/json')
+        response = self.client.post('/hospital/ipdpatient/create/', {"name" : "Prakash Singh", "contact_no" : "9894999685", "email_id" : "ps@gmail.com", "date_of_birth" : "1993-9-20", "address" : "Thane", "gender" : "male", "doctor_id" : 1, "ward":"General", "nurses" : [1, 2]}, content_type='application/json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()), 1)
         self.assertEqual(IpdPatient.objects.all().count(), 6)
 
-    # def test_update_ipdpatient(self):
-    #     self.assertEqual(IpdPatient.objects.get(pk=1).address, "Thane")
-    #     response = self.client.put('/hospital/ipdpatient/edit/1', {"name" : "Shubham Patil", "contact_no" : "9894959685", "email_id" : "sp@gmail.com", "date_of_birth" : "1995-5-23", "address" : "Dombivli", "gender" : "male", "doctor_id" : 1, ward="general", discharge_date = "2023-1-15"}, content_type='application/json')
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertEqual(len(response.json()), 1)
-    #     self.assertEqual(IpdPatient.objects.get(pk=1).address, "Dombivli")
+    def test_update_ipdpatient(self):
+        self.assertEqual(IpdPatient.objects.get(pk=1).address, "Thane")
+        response = self.client.put('/hospital/ipdpatient/edit/1', {"name" : "Shubham Patil", "contact_no" : "9894959685", "email_id" : "sp@gmail.com", "date_of_birth" : "1995-5-23", "address" : "Dombivli", "gender" : "male", "doctor_id" : 1, "ward":"general", "nurses" : [1]}, content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()), 1)
+        self.assertEqual(IpdPatient.objects.get(pk=1).address, "Dombivli")
 
     def test_delete_ipdpatient(self):
         self.assertEqual(IpdPatient.objects.all().count(), 5)
@@ -241,3 +301,25 @@ class TestIpdPatientView(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()), 4)
         self.assertEqual(IpdPatient.objects.all().count(), 4)
+
+    def test_update_charges(self):
+        response = self.client.put('/hospital/ipdpatient/updatecharges/1', {"bloodcheck_charges": 1000 , "medicine_charges" : 3000, "radiology_charges": 2000, "laundary_charges": 200, "injection_charges": 2000, "misc_charges": 40000}, content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+
+    def test_total_bill_amount(self):
+        patient = IpdPatient.objects.get(pk=1)
+        patient.medicine_charges = 5000
+        patient.radiology_charges = 2000
+        patient.bloodcheck_charges = 1000
+        patient.misc_charges = 5000
+        patient.save()
+        response = self.client.get('/hospital/ipdpatient/totalbill/1')
+        self.assertEqual(len(response.json()), 1)
+        self.assertEqual(float(response.json()[0]['fields']['bill_amount']), 13000)
+
+    def test_discharge(self):
+        response = self.client.put('/hospital/ipdpatient/discharge/1', {"bill_paid": True, "discharge_date": "2023-1-14"}, content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+
+
+
