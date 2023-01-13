@@ -1,11 +1,11 @@
 from django.test import SimpleTestCase, Client
 from django.urls import resolve, reverse
-from hospitalapp.department import get_all, get_by_id, create_department, delete_department, edit_department
+from hospitalapp.department import get_all, get_by_id, create_department, delete_department, edit_department, get_all_doctors_in_a_department, get_all_nurses_in_a_department
 from hospitalapp.staff import get_all_staff, get_staff_by_id, create_staff, delete_staff, edit_staff
-from hospitalapp.nurse import get_all_nurse, get_nurse_by_id, create_nurse, delete_nurse, edit_nurse
-from hospitalapp.doctor import get_all_doctor, get_doctor_by_id, create_doctor, edit_doctor, delete_doctor
+from hospitalapp.nurse import get_all_nurse, get_nurse_by_id, create_nurse, delete_nurse, edit_nurse, get_all_ipdpatients_of_nurse
+from hospitalapp.doctor import get_all_doctor, get_doctor_by_id, create_doctor, edit_doctor, delete_doctor, get_all_ipdpatients_of_doctor, get_all_opdpatients_of_doctor
 from hospitalapp.opdpatient import get_all_opdpatient, get_opdpatient_by_id, create_opdpatient, edit_opdpatient, delete_opdpatient
-from hospitalapp.ipdpatient import get_all_ipdpatient, get_ipdpatient_by_id, create_ipdpatient, edit_ipdpatient, delete_ipdpatient
+from hospitalapp.ipdpatient import get_all_ipdpatient, get_ipdpatient_by_id, create_ipdpatient, edit_ipdpatient, delete_ipdpatient, total_bill_amount, discharge, update_charges
 
 class TestDepartmentUrls(SimpleTestCase):
     def setUp(self):
@@ -30,6 +30,14 @@ class TestDepartmentUrls(SimpleTestCase):
     def test_delete_department_url_is_resolved(self):
         url = reverse('delete_department', args=[1])
         self.assertAlmostEquals(resolve(url).func, delete_department)
+
+    def test_get_all_doctors_in_dept_url_is_resolved(self):
+        url = reverse('get_doctors_in_department', args=[1])
+        self.assertAlmostEquals(resolve(url).func, get_all_doctors_in_a_department)
+
+    def test_get_all_nurses_in_dept_url_is_resolved(self):
+        url = reverse('get_nurses_in_department', args=[1])
+        self.assertAlmostEquals(resolve(url).func, get_all_nurses_in_a_department)
 
 class TestStaffUrls(SimpleTestCase):
     def setUp(self):
@@ -79,6 +87,10 @@ class TestNurseUrls(SimpleTestCase):
         url = reverse('delete_nurse', args=[1])
         self.assertAlmostEquals(resolve(url).func, delete_nurse)
 
+    def test_get_all_ipdpatients_of_nurse_url_is_resolved(self):
+        url = reverse('get_ipdpatients_of_nurse', args=[1])
+        self.assertAlmostEquals(resolve(url).func, get_all_ipdpatients_of_nurse)
+
 class TestDoctorUrls(SimpleTestCase):
     def setUp(self):
         self.client = Client()    
@@ -102,6 +114,14 @@ class TestDoctorUrls(SimpleTestCase):
     def test_delete_doctor_url_is_resolved(self):
         url = reverse('delete_doctor', args=[1])
         self.assertAlmostEquals(resolve(url).func, delete_doctor)
+
+    def test_get_all_ipdpatients_of_doctor_url_is_resolved(self):
+        url = reverse('get_ipdpatients_of_doctor', args=[1])
+        self.assertAlmostEquals(resolve(url).func, get_all_ipdpatients_of_doctor)
+
+    def test_get_all_opdpatients_of_doctor_url_is_resolved(self):
+        url = reverse('get_opdpatients_of_doctor', args=[1])
+        self.assertAlmostEquals(resolve(url).func, get_all_opdpatients_of_doctor)
 
 class TestOpdPatientUrls(SimpleTestCase):
     def setUp(self):
@@ -150,4 +170,16 @@ class TestIpdPatientUrls(SimpleTestCase):
     def test_delete_ipdpatient_url_is_resolved(self):
         url = reverse('delete_ipdpatient', args=[1])
         self.assertAlmostEquals(resolve(url).func, delete_ipdpatient)
+
+    def test_total_bill_amount_url_is_resolved(self):
+        url = reverse('total_bill', args=[1])
+        self.assertAlmostEquals(resolve(url).func, total_bill_amount)
+
+    def test_discharge_url_is_resolved(self):
+        url = reverse('discharge', args=[1])
+        self.assertAlmostEquals(resolve(url).func, discharge)
+
+    def test_update_charges_url_is_resolved(self):
+        url = reverse('update_charges', args=[1])
+        self.assertAlmostEquals(resolve(url).func, update_charges)
         

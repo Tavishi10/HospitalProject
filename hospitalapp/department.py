@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
-from .models import Department
+from .models import Department, Doctor, Nurse
 import json
 
 @csrf_exempt
@@ -55,4 +55,15 @@ def delete_department(request, id):
         # send json response with updated object
         return JsonResponse(data, safe=False)
 
+@csrf_exempt
+def get_all_doctors_in_a_department(request, id):
+    if(request.method == "GET"):
+        data = serializers.serialize("json", Doctor.objects.filter(dept_id = id))
+        return JsonResponse(json.loads(data), safe=False)
+
+@csrf_exempt
+def get_all_nurses_in_a_department(request, id):
+    if(request.method == "GET"):
+        data = serializers.serialize("json", Nurse.objects.filter(dept_id = id))
+        return JsonResponse(json.loads(data), safe=False)
 

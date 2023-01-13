@@ -30,7 +30,13 @@ def create_opdpatient(request):
 
 @csrf_exempt
 def edit_opdpatient(request, id):
-    pass
+    if (request.method == "PUT"):
+        body = json.loads(request.body.decode("utf-8"))
+        doctor = Doctor.objects.get(pk = body['doctor_id'])
+        dob = datetime.strptime(body['date_of_birth'], "%Y-%m-%d").date()
+        OpdPatient.objects.filter(pk=id).update(name=body['name'], contact_no=body['contact_no'], email_id=body['email_id'], date_of_birth = dob, address=body['address'], gender=body['gender'], doctor_id = doctor)
+        data = json.loads(serializers.serialize('json', OpdPatient.objects.filter(pk=id)))
+        return JsonResponse(data, safe=False)
 
 @csrf_exempt
 def delete_opdpatient(request, id):
