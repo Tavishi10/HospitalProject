@@ -2,13 +2,17 @@ import typer
 import requests
 import json
 from django.urls import resolve, reverse
+from typing import List
 
 ip = "192.168.64.2"
 port = "30159"
 
 app = typer.Typer()
 
+##################################
 #commands to operate on department
+##################################
+
 @app.command()
 def get_all_departments():
     response = requests.get(f"http://{ip}:{port}/hospital/department/")
@@ -36,12 +40,28 @@ def update_department(id:int , dept_name: str):
 
 @app.command()
 def delete_department(id: int):
-    response = requests.get(f"http://{ip}:{port}/hospital/department/delete/{id}")
+    response = requests.delete(f"http://{ip}:{port}/hospital/department/delete/{id}")
+    formatted_response = json.loads(response.text)
+    print(json.dumps(formatted_response, indent=2))
+
+@app.command()
+def get_doctors_in_a_department(id: int):
+    response = requests.get(f"http://{ip}:{port}/hospital/department/doctors/{id}")
+    formatted_response = json.loads(response.text)
+    print(json.dumps(formatted_response, indent=2))
+
+@app.command()
+def get_nurses_in_a_department(id: int):
+    response = requests.get(f"http://{ip}:{port}/hospital/department/nurses/{id}")
     formatted_response = json.loads(response.text)
     print(json.dumps(formatted_response, indent=2))
 
 
+
+##############################
 # commands to operate on staff
+##############################
+
 @app.command()
 def get_all_staff():
     response = requests.get(f"http://{ip}:{port}/hospital/staff/")
@@ -68,10 +88,13 @@ def update_staff(id: int, name: str, contact_no: str, email: str, dob: str, sala
 
 @app.command()
 def delete_staff(id: int):
-    response = requests.get(f"http://{ip}:{port}/hospital/staff/delete/{id}")
+    response = requests.delete(f"http://{ip}:{port}/hospital/staff/delete/{id}")
     formatted_response = json.loads(response.text)
     print(json.dumps(formatted_response, indent=2))
 
+
+
+###############################
 # commands to operate on nurse
 ###############################
 
@@ -101,13 +124,21 @@ def update_nurse(id:int, name: str, contact_no: str, email: str, dob: str, spec:
 
 @app.command()
 def delete_nurse(id: int):
-    response = requests.get(f"http://{ip}:{port}/hospital/nurse/delete/{id}")
+    response = requests.delete(f"http://{ip}:{port}/hospital/nurse/delete/{id}")
+    formatted_response = json.loads(response.text)
+    print(json.dumps(formatted_response, indent=2))
+
+@app.command()
+def get_ipdpatient_of_nurse(id: int):
+    response = requests.get(f"http://{ip}:{port}/hospital/nurse/ipdpatient/{id}")
     formatted_response = json.loads(response.text)
     print(json.dumps(formatted_response, indent=2))
 
 
-# # commands to operate on doctor
-# ###############################
+
+#################################
+## commands to operate on doctor
+################################
 
 @app.command()
 def get_all_doctors():
@@ -135,12 +166,26 @@ def update_doctor(id: int, name: str, contact_no: str, email: str, dob: str, spe
 
 @app.command()
 def delete_doctor(id: int):
-    response = requests.get(f"http://{ip}:{port}/hospital/doctor/delete/{id}")
+    response = requests.delete(f"http://{ip}:{port}/hospital/doctor/delete/{id}")
     formatted_response = json.loads(response.text)
     print(json.dumps(formatted_response, indent=2))
 
-# # commands to operate on opdpatient
-# ###################################
+@app.command()
+def get_opdpatient_of_doctor(id: int):
+    response = requests.get(f"http://{ip}:{port}/hospital/doctor/opdpatient/{id}")
+    formatted_response = json.loads(response.text)
+    print(json.dumps(formatted_response, indent=2))
+
+@app.command()
+def get_ipdpatient_of_doctor(id: int):
+    response = requests.get(f"http://{ip}:{port}/hospital/doctor/ipdpatient/{id}")
+    formatted_response = json.loads(response.text)
+    print(json.dumps(formatted_response, indent=2))
+
+
+#####################################
+## commands to operate on opdpatient
+#####################################
 
 @app.command()
 def get_all_opdpatients():
@@ -168,12 +213,14 @@ def update_opdpatient(id : int, name: str, contact_no: str, email: str, dob: str
 
 @app.command()
 def delete_opdpatient(id: int):
-    response = requests.get(f"http://{ip}:{port}/hospital/opdpatient/delete/{id}")
+    response = requests.delete(f"http://{ip}:{port}/hospital/opdpatient/delete/{id}")
     formatted_response = json.loads(response.text)
     print(json.dumps(formatted_response, indent=2))
 
-# # commands to operate on ipdpatient
-# ###################################
+
+#####################################
+# commands to operate on ipdpatient
+#####################################
 
 @app.command()
 def get_all_ipdpatients():
@@ -187,21 +234,39 @@ def get_ipdpatient_by_id(id: int):
     formatted_response = json.loads(response.text)
     print(json.dumps(formatted_response, indent=2))
 
-# @app.command()
-# def create_ipdpatient(name: str, contact_no: str, email: str, dob: str, address: str, gender: str, doc_id: int, ward: str, nurses: list):
-#     response = requests.post(f"http://{ip}:{port}/hospital/ipdpatient/create/", json={"name" : name, "contact_no" : contact_no, "email_id" : email, "date_of_birth" : dob, "address" : address, "gender" : gender, "doctor_id": doc_id, "ward" : ward, "nurses": nurses})
-#     formatted_response = json.loads(response.text)
-#     print(json.dumps(formatted_response, indent=2))
+@app.command()
+def create_ipdpatient(name: str, contact_no: str, email: str, dob: str, address: str, gender: str, doc_id: int, ward: str, nurses: List[int]):
+    response = requests.post(f"http://{ip}:{port}/hospital/ipdpatient/create/", json={"name" : name, "contact_no" : contact_no, "email_id" : email, "date_of_birth" : dob, "address" : address, "gender" : gender, "doctor_id": doc_id, "ward" : ward, "nurses": nurses})
+    formatted_response = json.loads(response.text)
+    print(json.dumps(formatted_response, indent=2))
 
-# @app.command()
-# def update_ipdpatient(id : int, name: str, contact_no: str, email: str, dob: str, address: str, gender: str, doc_id: int, ward: str, nurses: list):
-#     response = requests.put(f"http://{ip}:{port}/hospital/ipdpatient/edit/{id}", json={"name" : name, "contact_no" : contact_no, "email_id" : email, "date_of_birth" : dob, "address" : address, "gender" : gender, "doctor_id": doc_id, "ward" : ward, "nurses": nurses})
-#     formatted_response = json.loads(response.text)
-#     print(json.dumps(formatted_response, indent=2))
+@app.command()
+def update_ipdpatient(id : int, name: str, contact_no: str, email: str, dob: str, address: str, gender: str, doc_id: int, ward: str, nurses: List[int]):
+    response = requests.put(f"http://{ip}:{port}/hospital/ipdpatient/edit/{id}", json={"name" : name, "contact_no" : contact_no, "email_id" : email, "date_of_birth" : dob, "address" : address, "gender" : gender, "doctor_id": doc_id, "ward" : ward, "nurses": nurses})
+    formatted_response = json.loads(response.text)
+    print(json.dumps(formatted_response, indent=2))
 
 @app.command()
 def delete_ipdpatient(id: int):
-    response = requests.get(f"http://{ip}:{port}/hospital/ipdpatient/delete/{id}")
+    response = requests.delete(f"http://{ip}:{port}/hospital/ipdpatient/delete/{id}")
+    formatted_response = json.loads(response.text)
+    print(json.dumps(formatted_response, indent=2))
+
+@app.command()
+def ipdpatient_update_charges(id: int, bloodcheck: float, medicine: float, radiology: float, laundary: float, injection: float, misc: float):
+    response = requests.put(f"http://{ip}:{port}/hospital/ipdpatient/updatecharges/{id}", json={"bloodcheck_charges": bloodcheck , "medicine_charges" : medicine, "radiology_charges": radiology, "laundary_charges": laundary, "injection_charges": injection, "misc_charges": misc})
+    formatted_response = json.loads(response.text)
+    print(json.dumps(formatted_response, indent=2))
+
+@app.command()
+def ipdpatient_discharge(id: int, bill_paid: bool, discharge_date: str):
+    response = requests.put(f"http://{ip}:{port}/hospital/ipdpatient/discharge/{id}", json={"bill_paid": bill_paid, "discharge_date": discharge_date})
+    formatted_response = json.loads(response.text)
+    print(json.dumps(formatted_response, indent=2))
+
+@app.command()
+def ipdpatient_total_bill_amount(id: int):
+    response = requests.get(f"http://{ip}:{port}/hospital/ipdpatient/totalbill/{id}")
     formatted_response = json.loads(response.text)
     print(json.dumps(formatted_response, indent=2))
 
