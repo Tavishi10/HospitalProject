@@ -15,8 +15,11 @@ def get_all_doctor(request):
 @csrf_exempt
 def get_doctor_by_id(request, id):
     if(request.method == "GET"):
-        data = serializers.serialize("json", Doctor.objects.filter(pk=id))
-        return JsonResponse(json.loads(data), safe=False)
+        data = Doctor.objects.filter(pk=id)
+        if (data.count() == 0):
+            return JsonResponse(status=404, data={'message':'Doctor not found'})
+        dataserialise = serializers.serialize("json", Doctor.objects.filter(pk=id))
+        return JsonResponse(json.loads(dataserialise), safe=False)
 
 @csrf_exempt
 def create_doctor(request):
@@ -31,6 +34,9 @@ def create_doctor(request):
 @csrf_exempt
 def delete_doctor(request, id):
     if (request.method == "DELETE"):
+        data = Doctor.objects.filter(pk=id)
+        if (data.count() == 0):
+            return JsonResponse(status=404, data={'message':'Doctor not found'})
         Doctor.objects.filter(pk=id).delete()
         newrecord = Doctor.objects.all()
         data = json.loads(serializers.serialize('json', newrecord))
@@ -39,6 +45,9 @@ def delete_doctor(request, id):
 @csrf_exempt
 def edit_doctor(request, id):
     if (request.method == "PUT"):
+        data = Doctor.objects.filter(pk=id)
+        if (data.count() == 0):
+            return JsonResponse(status=404, data={'message':'Doctor not found'})
         body = json.loads(request.body.decode("utf-8"))
         dept = Department.objects.get(pk = body['dept_id'])
         date = datetime.strptime(body['date_of_birth'], "%Y-%m-%d").date()
@@ -50,12 +59,18 @@ def edit_doctor(request, id):
 @csrf_exempt
 def get_all_opdpatients_of_doctor(request, id):
     if(request.method == "GET"):
+        data = Doctor.objects.filter(pk=id)
+        if (data.count() == 0):
+            return JsonResponse(status=404, data={'message':'Doctor not found'})
         data = serializers.serialize("json", OpdPatient.objects.filter(doctor_id = id))
         return JsonResponse(json.loads(data), safe=False)
 
 @csrf_exempt
 def get_all_ipdpatients_of_doctor(request, id):
     if(request.method == "GET"):
+        data = Doctor.objects.filter(pk=id)
+        if (data.count() == 0):
+            return JsonResponse(status=404, data={'message':'Doctor not found'})
         data = serializers.serialize("json", IpdPatient.objects.filter(doctor_id = id))
         return JsonResponse(json.loads(data), safe=False)
 

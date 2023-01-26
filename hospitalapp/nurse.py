@@ -17,6 +17,9 @@ def get_all_nurse(request):
 @csrf_exempt
 def get_nurse_by_id(request, id):
     if(request.method == "GET"):
+        data = Nurse.objects.filter(pk=id)
+        if (data.count() == 0):
+            return JsonResponse(status=404, data={'message':'Nurse not found'})
         data = serializers.serialize("json", Nurse.objects.filter(pk=id))
         return JsonResponse(json.loads(data), safe=False)
 
@@ -33,6 +36,9 @@ def create_nurse(request):
 @csrf_exempt
 def delete_nurse(request, id):
     if (request.method == "DELETE"):
+        data = Nurse.objects.filter(pk=id)
+        if (data.count() == 0):
+            return JsonResponse(status=404, data={'message':'Nurse not found'})
         Nurse.objects.filter(pk=id).delete()
         newrecord = Nurse.objects.all()
         data = json.loads(serializers.serialize('json', newrecord))
@@ -41,6 +47,9 @@ def delete_nurse(request, id):
 @csrf_exempt
 def edit_nurse(request, id):
     if (request.method == "PUT"):
+        data = Nurse.objects.filter(pk=id)
+        if (data.count() == 0):
+            return JsonResponse(status=404, data={'message':'Nurse not found'})
         body = json.loads(request.body.decode("utf-8"))
         dept = Department.objects.get(pk = body['dept_id'])
         date = datetime.strptime(body['date_of_birth'], "%Y-%m-%d").date()
@@ -52,5 +61,8 @@ def edit_nurse(request, id):
 @csrf_exempt
 def get_all_ipdpatients_of_nurse(request, id):
     if(request.method == "GET"):
+        data = Nurse.objects.filter(pk=id)
+        if (data.count() == 0):
+            return JsonResponse(status=404, data={'message':'Nurse not found'})
         data = serializers.serialize("json", IpdPatient.objects.filter(nurses = id))
         return JsonResponse(json.loads(data), safe=False)

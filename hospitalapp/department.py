@@ -28,12 +28,18 @@ def create_department(request):
 @csrf_exempt
 def get_by_id(request, id):
     if(request.method == "GET"):
-        data = serializers.serialize("json", Department.objects.filter(pk=id))
-        return JsonResponse(json.loads(data), safe=False)
+        data = Department.objects.filter(pk=id)
+        if (data.count() == 0):
+            return JsonResponse(status=404, data={'message':'Department not found'})
+        data_serialised = serializers.serialize("json", data)
+        return JsonResponse(json.loads(data_serialised), safe=False)
 
 @csrf_exempt
 def edit_department(request, id):
     if (request.method == "PUT"):
+        data = Department.objects.filter(pk=id)
+        if (data.count() == 0):
+            return JsonResponse(status=404, data={'message':'Department not found'})
         # Turn the body into a dict
         body = json.loads(request.body.decode("utf-8"))
         # update the item
@@ -47,6 +53,9 @@ def edit_department(request, id):
 @csrf_exempt
 def delete_department(request, id):
     if (request.method == "DELETE"):
+        data = Department.objects.filter(pk=id)
+        if (data.count() == 0):
+            return JsonResponse(status=404, data={'message':'Department not found'})
         # delete the item, get all remaining records for response
         Department.objects.filter(pk=id).delete()
         newrecord = Department.objects.all()
@@ -58,12 +67,18 @@ def delete_department(request, id):
 @csrf_exempt
 def get_all_doctors_in_a_department(request, id):
     if(request.method == "GET"):
+        data = Department.objects.filter(pk=id)
+        if (data.count() == 0):
+            return JsonResponse(status=404, data={'message':'Department not found'})
         data = serializers.serialize("json", Doctor.objects.filter(dept_id = id))
         return JsonResponse(json.loads(data), safe=False)
 
 @csrf_exempt
 def get_all_nurses_in_a_department(request, id):
     if(request.method == "GET"):
+        data = Department.objects.filter(pk=id)
+        if (data.count() == 0):
+            return JsonResponse(status=404, data={'message':'Department not found'})
         data = serializers.serialize("json", Nurse.objects.filter(dept_id = id))
         return JsonResponse(json.loads(data), safe=False)
 

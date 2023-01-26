@@ -15,6 +15,9 @@ def get_all_staff(request):
 @csrf_exempt
 def get_staff_by_id(request, id):
     if(request.method == "GET"):
+        data = Staff.objects.filter(pk=id)
+        if (data.count() == 0):
+            return JsonResponse(status=404, data={'message':'Staff not found'})
         data = serializers.serialize("json", Staff.objects.filter(pk=id))
         return JsonResponse(json.loads(data), safe=False)
 
@@ -31,6 +34,9 @@ def create_staff(request):
 @csrf_exempt
 def delete_staff(request, id):
     if (request.method == "DELETE"):
+        data = Staff.objects.filter(pk=id)
+        if (data.count() == 0):
+            return JsonResponse(status=404, data={'message':'Staff not found'})
         Staff.objects.filter(pk=id).delete()
         newrecord = Staff.objects.all()
         data = json.loads(serializers.serialize('json', newrecord))
@@ -39,6 +45,9 @@ def delete_staff(request, id):
 @csrf_exempt
 def edit_staff(request, id):
     if (request.method == "PUT"):
+        data = Staff.objects.filter(pk=id)
+        if (data.count() == 0):
+            return JsonResponse(status=404, data={'message':'Staff not found'})
         body = json.loads(request.body.decode("utf-8"))
         dept = Department.objects.get(pk = body['dept_id'])
         date = datetime.strptime(body['date_of_birth'], "%Y-%m-%d").date()

@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: django
-        image: tavishi10/django-docker:0.0.1
+        image: tavishi10/django-docker:0.0.2
         ports:
         - containerPort: 8000
