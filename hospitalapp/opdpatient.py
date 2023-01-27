@@ -15,6 +15,9 @@ def get_all_opdpatient(request):
 @csrf_exempt
 def get_opdpatient_by_id(request, id):
     if(request.method == "GET"):
+        data = OpdPatient.objects.filter(pk=id)
+        if (data.count() == 0):
+            return JsonResponse(status=404, data={'message':'Opd Patient not found'})
         data = serializers.serialize("json", OpdPatient.objects.filter(pk=id))
         return JsonResponse(json.loads(data), safe=False)
 
@@ -31,6 +34,9 @@ def create_opdpatient(request):
 @csrf_exempt
 def edit_opdpatient(request, id):
     if (request.method == "PUT"):
+        data = OpdPatient.objects.filter(pk=id)
+        if (data.count() == 0):
+            return JsonResponse(status=404, data={'message':'Opd Patient not found'})
         body = json.loads(request.body.decode("utf-8"))
         doctor = Doctor.objects.get(pk = body['doctor_id'])
         dob = datetime.strptime(body['date_of_birth'], "%Y-%m-%d").date()
@@ -41,6 +47,9 @@ def edit_opdpatient(request, id):
 @csrf_exempt
 def delete_opdpatient(request, id):
     if (request.method == "DELETE"):
+        data = OpdPatient.objects.filter(pk=id)
+        if (data.count() == 0):
+            return JsonResponse(status=404, data={'message':'Opd Patient not found'})
         OpdPatient.objects.filter(pk=id).delete()
         newrecord = OpdPatient.objects.all()
         data = json.loads(serializers.serialize('json', newrecord))

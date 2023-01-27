@@ -15,6 +15,9 @@ def get_all_ipdpatient(request):
 @csrf_exempt
 def get_ipdpatient_by_id(request, id):
     if(request.method == "GET"):
+        data = IpdPatient.objects.filter(pk=id)
+        if (data.count() == 0):
+            return JsonResponse(status=404, data={'message':'Ipd Patient not found'})
         data = serializers.serialize("json", IpdPatient.objects.filter(pk=id))
         return JsonResponse(json.loads(data), safe=False)
 
@@ -34,6 +37,9 @@ def create_ipdpatient(request):
 @csrf_exempt
 def edit_ipdpatient(request, id):
     if (request.method == "PUT"):
+        data = IpdPatient.objects.filter(pk=id)
+        if (data.count() == 0):
+            return JsonResponse(status=404, data={'message':'Ipd Patient not found'})
         body = json.loads(request.body.decode("utf-8"))
         doctor = Doctor.objects.get(pk = body['doctor_id'])
         dob = datetime.strptime(body['date_of_birth'], "%Y-%m-%d").date()
@@ -47,6 +53,9 @@ def edit_ipdpatient(request, id):
 @csrf_exempt
 def delete_ipdpatient(request, id):
     if (request.method == "DELETE"):
+        data = IpdPatient.objects.filter(pk=id)
+        if (data.count() == 0):
+            return JsonResponse(status=404, data={'message':'Ipd Patient not found'})
         IpdPatient.objects.filter(pk=id).delete()
         newrecord = IpdPatient.objects.all()
         data = json.loads(serializers.serialize('json', newrecord))
@@ -55,6 +64,9 @@ def delete_ipdpatient(request, id):
 @csrf_exempt
 def update_charges(request, id):
     if(request.method == "PUT"):
+        data = IpdPatient.objects.filter(pk=id)
+        if (data.count() == 0):
+            return JsonResponse(status=404, data={'message':'Ipd Patient not found'})
         body = json.loads(request.body.decode("utf-8"))
         IpdPatient.objects.filter(pk=id).update(bloodcheck_charges=body['bloodcheck_charges'], medicine_charges=body['medicine_charges'], radiology_charges=body['radiology_charges'], laundary_charges=body['laundary_charges'], injection_charges=body['injection_charges'], misc_charges=body['misc_charges'])
         newrecord = IpdPatient.objects.filter(pk=id)
@@ -64,6 +76,9 @@ def update_charges(request, id):
 @csrf_exempt
 def total_bill_amount(request, id):
     if(request.method == "GET"):
+        data = IpdPatient.objects.filter(pk=id)
+        if (data.count() == 0):
+            return JsonResponse(status=404, data={'message':'Ipd Patient not found'})
         patient = IpdPatient.objects.get(pk=id)
         total_amt = patient.bloodcheck_charges + patient.medicine_charges + patient.radiology_charges + patient.laundary_charges + patient.injection_charges + patient.misc_charges
         IpdPatient.objects.filter(pk=id).update(bill_amount= total_amt)
@@ -73,6 +88,9 @@ def total_bill_amount(request, id):
 @csrf_exempt
 def discharge(request, id):
     if(request.method == "PUT"):
+        data = IpdPatient.objects.filter(pk=id)
+        if (data.count() == 0):
+            return JsonResponse(status=404, data={'message':'Ipd Patient not found'})
         body = json.loads(request.body.decode("utf-8"))
         date = datetime.strptime(body['discharge_date'], "%Y-%m-%d").date()
         IpdPatient.objects.filter(pk=id).update(bill_paid=body['bill_paid'], discharge_date=date)
